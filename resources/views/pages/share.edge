@@ -1,0 +1,188 @@
+@layouts.app(title="One-Time Information Sharing")
+@slot('headerTitle')
+One-Time Information Sharing
+@endslot
+
+@slot('headerSubtitle')
+Share sensitive information securely with a link that can only be viewed once.
+@endslot
+
+@slot('content')
+<div class="w-full max-w-2xl mx-auto">
+  <form id="shareForm"
+    class="bg-white/90 backdrop-blur-sm p-6 md:p-8 rounded-2xl shadow-lg border border-purple-200 hover:border-purple-300 transition-all duration-300 transform hover:shadow-xl hover:scale-[1.01]">
+    <!-- Textarea -->
+    <div class="mb-6">
+      <label for="content" class="block text-sm font-medium text-indigo-700 mb-2">Your Information</label>
+      <textarea id="content" name="content" rows="8"
+        class="w-full p-4 bg-white border-2 border-purple-200 rounded-xl focus:ring-2 focus:ring-indigo-400 focus:border-indigo-500 focus:outline-none transition-all duration-200 resize-none placeholder-purple-300 shadow-inner"
+        placeholder="Enter the information you want to share securely..." required></textarea>
+    </div>
+
+    <!-- Options -->
+    <div class="mb-6 flex flex-col sm:flex-row gap-4">
+      <div class="flex-1">
+        <label for="expiration" class="block text-sm font-medium text-indigo-700 mb-2">Expires After</label>
+        <select id="expiration" name="expiration"
+          class="w-full p-3 bg-white border-2 border-purple-200 rounded-lg focus:ring-2 focus:ring-indigo-400 focus:border-indigo-500 focus:outline-none transition-all duration-200 shadow-inner">
+          <option value="5m">5 minutes</option>
+          <option value="1h" selected>1 hour</option>
+          <option value="1d">1 day</option>
+          <option value="7d">7 days</option>
+        </select>
+      </div>
+      <div class="flex-1">
+        <label for="password" class="block text-sm font-medium text-indigo-700 mb-2">Optional Password</label>
+        <input type="password" id="password" name="password"
+          class="w-full p-3 bg-white border-2 border-purple-200 rounded-lg focus:ring-2 focus:ring-indigo-400 focus:border-indigo-500 focus:outline-none transition-all duration-200 placeholder-purple-300 shadow-inner"
+          placeholder="Add extra protection" />
+      </div>
+    </div>
+
+    <!-- Submit Button -->
+    <div class="flex justify-center">
+      <button type="submit" id="generate-link"
+        class="px-8 py-3 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white font-medium rounded-lg transition-all duration-300 transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-400 flex items-center gap-2 shadow-md hover:shadow-lg">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+            d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1">
+          </path>
+        </svg>
+        Get One-Time Link
+      </button>
+    </div>
+
+    <!-- Loading indicator (hidden by default) -->
+    <div id="loading" class="text-center mt-4 hidden">
+      <div class="inline-block animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-indigo-500"></div>
+      <p class="text-indigo-700 mt-2 font-medium">Creating your secure link...</p>
+    </div>
+  </form>
+
+  <!-- Result (Hidden by default) -->
+  <div id="result"
+    class="mt-6 bg-white/90 backdrop-blur-sm p-6 rounded-2xl shadow-lg border border-indigo-200 hidden transform transition-all duration-500 ease-in-out hover:shadow-xl">
+    <h3 class="text-lg font-semibold text-transparent bg-clip-text bg-gradient-to-r from-indigo-700 to-purple-700 mb-3">
+      Your Complete One-Time Link</h3>
+    <p class="text-sm text-indigo-900/70 mb-2">This link already includes the private key - just share it as is!</p>
+    <div class="flex mb-4">
+      <input type="text" id="share-link"
+        class="flex-1 p-3 bg-gradient-to-br from-white to-indigo-50/70 border-2 border-indigo-200 rounded-l-lg focus:outline-none shadow-inner"
+        readonly />
+      <button id="copy-link"
+        class="px-4 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white rounded-r-lg transition-all duration-300 shadow-md hover:shadow-lg">
+        Copy
+      </button>
+    </div>
+
+    <div class="mt-4 p-4 bg-gradient-to-r from-amber-50 to-yellow-50 border border-amber-200 rounded-lg shadow-sm">
+      <p class="text-sm text-amber-800 font-medium bg-amber-100/50 px-2 py-1 rounded-md inline-block mb-2">Important
+        Security Information</p>
+      <ul class="text-sm text-amber-700 list-disc pl-5 mt-2 space-y-1">
+        <li>This link will only work once and will expire after the selected time period.</li>
+        <li>The private key is embedded in the URL fragment (after the # symbol) and is not sent to our servers.</li>
+        <li>Just share the complete link - the recipient will automatically be able to decrypt the message.</li>
+      </ul>
+    </div>
+  </div>
+</div>
+@endslot
+
+@slot('scripts')
+<script>
+  function togglePrivateKey() {
+    const container = document.getElementById('private-key-container');
+    const toggle = document.getElementById('private-key-toggle');
+
+    if (container.classList.contains('hidden')) {
+      container.classList.remove('hidden');
+      toggle.style.transform = 'rotate(90deg)';
+    } else {
+      container.classList.add('hidden');
+      toggle.style.transform = 'rotate(0deg)';
+    }
+  }
+
+  const showAlert = (message, type) => {
+    const alertDiv = document.createElement('div');
+    alertDiv.className = `fixed top-4 right-4 p-4 rounded-lg ${type === 'error' ? 'bg-red-500' : 'bg-green-500'} text-white shadow-lg z-50`;
+    alertDiv.textContent = message;
+    document.body.appendChild(alertDiv);
+
+    setTimeout(() => {
+      alertDiv.classList.add('opacity-0', 'transition-opacity', 'duration-500');
+      setTimeout(() => alertDiv.remove(), 500);
+    }, 3000);
+  };
+
+  document.getElementById('shareForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+
+    const content = document.getElementById('content').value;
+    const expiration = document.getElementById('expiration').value;
+    const password = document.getElementById('password').value;
+
+    if (!content.trim()) {
+      showAlert('Please enter the information you want to share', 'error');
+      return;
+    }
+
+    const loadingEl = document.getElementById('loading');
+    loadingEl.classList.remove('hidden');
+
+    try {
+      const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+
+      const response = await fetch('/share', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+          'X-CSRF-TOKEN': csrfToken || ''
+        },
+        body: JSON.stringify({ content, expiration, password })
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        const resultContainer = document.getElementById('result');
+        resultContainer.classList.remove('hidden');
+        const fullShareUrl = window.location.origin + data.shareUrl;
+        document.getElementById('share-link').value = fullShareUrl;
+        resultContainer.scrollIntoView({ behavior: 'smooth' });
+        showAlert('Your secure share has been created successfully!', 'success');
+      } else {
+        showAlert('Error: ' + (data.message || 'Failed to create share'), 'error');
+      }
+    } catch (error) {
+      console.error('Error creating share:', error);
+      showAlert('An unexpected error occurred. Please try again.', 'error');
+    } finally {
+      loadingEl.classList.add('hidden');
+    }
+  });
+
+  document.getElementById('copy-link').addEventListener('click', function() {
+    const shareLinkInput = document.getElementById('share-link');
+    shareLinkInput.select();
+    document.execCommand('copy');
+    this.textContent = 'Copied!';
+    setTimeout(() => {
+      this.textContent = 'Copy';
+    }, 2000);
+  });
+
+  document.getElementById('copy-key').addEventListener('click', function() {
+    const privateKeyInput = document.getElementById('private-key');
+    privateKeyInput.select();
+    document.execCommand('copy');
+    this.textContent = 'Copied!';
+    setTimeout(() => {
+      this.textContent = 'Copy';
+    }, 2000);
+    showAlert('Private key copied! Keep it safe - you\'ll need it to decrypt the message.', 'success');
+  });
+</script>
+@endslot
+@end

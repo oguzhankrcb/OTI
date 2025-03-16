@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  @if(csrfToken)
+  <meta name="csrf-token" content="{{ csrfToken }}" />
+  @endif
+  <title>{{ title || 'One-Time Information Sharing' }}</title>
+
+  <link rel="preconnect" href="https://fonts.bunny.net" />
+  <link href="https://fonts.bunny.net/css?family=instrument-sans:400,400i,500,500i,600,600i,700,700i"
+    rel="stylesheet" />
+
+  <style>
+    :root {
+      --sand-1: #fdfdfc;
+      --sand-2: #f9f9f8;
+      --sand-3: #f1f0ef;
+      --sand-4: #e9e8e6;
+      --sand-5: #e2e1de;
+      --sand-6: #dad9d6;
+      --sand-7: #cfceca;
+      --sand-8: #bcbbb5;
+      --sand-9: #8d8d86;
+      --sand-10: #82827c;
+      --sand-11: #63635e;
+      --sand-12: #21201c;
+      
+      /* New color variables */
+      --primary-indigo: #5a45ff;
+      --primary-purple: #8c65f7;
+      --primary-indigo-light: #a599ff;
+      --primary-purple-light: #b9a0fb;     
+    }
+    
+    @keyframes blob {
+      0% { transform: translate(0px, 0px) scale(1); }
+      33% { transform: translate(30px, -50px) scale(1.1); }
+      66% { transform: translate(-20px, 20px) scale(0.9); }
+      100% { transform: translate(0px, 0px) scale(1); }
+    }
+    
+    .animate-blob {
+      animation: blob 12s infinite alternate;
+    }
+    
+    .animation-delay-2000 {
+      animation-delay: 2s;
+    }
+    
+    .animation-delay-4000 {
+      animation-delay: 4s;
+    }
+    
+    .animation-delay-6000 {
+      animation-delay: 6s;
+    }
+  </style>
+
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <script>
+    tailwind.config = {
+        theme: {
+          extend: {
+            fontFamily: {
+              sans: [ "Instrument Sans", "sans-serif" ]
+            },
+            colors: {
+              primary: {
+                DEFAULT: "#5A45FF",
+                lighter: "#a599ff"
+              },
+              sand: {
+                1: "var(--sand-1)",
+                2: "var(--sand-2)",
+                3: "var(--sand-3)",
+                4: "var(--sand-4)",
+                5: "var(--sand-5)",
+                6: "var(--sand-6)",
+                7: "var(--sand-7)",
+                8: "var(--sand-8)",
+                9: "var(--sand-9)",
+                10: "var(--sand-10)",
+                11: "var(--sand-11)",
+                12: "var(--sand-12)"
+              },
+              indigo: {
+                50: "#eef2ff",
+                100: "#e0e7ff",
+                200: "#c7d2fe",
+                300: "#a5b4fc",
+                400: "#818cf8",
+                500: "#6366f1",
+                600: "#4f46e5",
+                700: "#4338ca",
+                800: "#3730a3",
+                900: "#312e81",
+                950: "#1e1b4b"
+              },
+              purple: {
+                50: "#faf5ff",
+                100: "#f3e8ff",
+                200: "#e9d5ff",
+                300: "#d8b4fe",
+                400: "#c084fc",
+                500: "#a855f7",
+                600: "#9333ea",
+                700: "#7e22ce",
+                800: "#6b21a8",
+                900: "#581c87",
+                950: "#3b0764"
+              },
+              amber: {
+                50: "#fffbeb",
+                100: "#fef3c7",
+                200: "#fde68a",
+                300: "#fcd34d",
+                400: "#fbbf24",
+                500: "#f59e0b",
+                600: "#d97706",
+                700: "#b45309",
+                800: "#92400e",
+                900: "#78350f",
+                950: "#451a03"
+              }
+            },
+            animation: {
+              blob: "blob 12s infinite alternate"
+            },
+            backgroundImage: {
+              'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))'
+            }
+          }
+        }
+      };
+  </script>
+
+  @vite(['resources/css/app.css', 'resources/js/app.js'])
+
+  @if ($slots.styles)
+  {{{ await $slots.styles() }}}
+  @endif
+</head>
+
+<body class="min-h-screen w-screen font-sans overflow-x-hidden">
+  <!-- Background Gradient -->
+  <div class="fixed inset-0 bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 z-[-2] opacity-70"></div>
+  
+  <!-- Animated Background Shapes -->
+  <div class="fixed inset-0 overflow-hidden z-[-1]">
+    <div class="absolute top-10 left-10 w-64 h-64 bg-purple-300 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob"></div>
+    <div class="absolute top-[40%] right-20 w-72 h-72 bg-yellow-300 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob animation-delay-2000"></div>
+    <div class="absolute bottom-20 left-1/3 w-80 h-80 bg-pink-300 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob animation-delay-4000"></div>
+    <div class="absolute bottom-40 right-1/2 w-60 h-60 bg-blue-300 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob animation-delay-6000"></div>
+  </div>
+  
+  <div
+    class="fixed xl:absolute left-8 right-8 top-0 bottom-0 xl:inset-0 max-w-screen-xl mx-auto before:content-[''] before:absolute before:top-0 before:left-0 before:h-full before:w-px after:content-[''] after:absolute after:top-0 after:right-0 after:h-full after:w-px">
+  </div>
+
+  <div class="relative flex flex-col min-h-screen items-center justify-center px-4 py-8">
+    <!-- Header -->
+    <div class="mb-8 text-center">
+      <h1 class="text-3xl md:text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-indigo-700 to-purple-700 mb-2">{{{ await $slots.headerTitle() }}}</h1>
+      <p class="text-indigo-900/80 max-w-md mx-auto font-medium">{{{ await $slots.headerSubtitle() }}}</p>
+    </div>
+
+    <!-- Main Content -->
+    <div class="w-full max-w-2xl mx-auto relative z-10">
+      {{{ await $slots.content() }}}
+    </div>
+
+    <!-- Footer -->
+    <div class="mt-12 text-center">
+      <p class="text-sm bg-white/70 backdrop-blur-sm px-4 py-2 rounded-full inline-block shadow-sm border border-purple-100 text-indigo-700">
+        <span class="inline-block mr-1">🔒</span> Secure by design. Your data is encrypted and automatically deleted after viewing.
+      </p>
+    </div>
+  </div>
+
+  @if ($slots.scripts)
+  {{{ await $slots.scripts() }}}
+  @endif
+</body>
+
+</html>
+
+</html>
