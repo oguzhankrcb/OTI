@@ -1,12 +1,14 @@
 @layouts.app(title="One-Time Information Sharing")
   @slot('headerTitle')
-    One-Time Information Sharing
+    <div class="flex flex-col items-center justify-center mb-4">
+      One-Time Information Sharing
+    </div>
   @endslot
-  
+
   @slot('headerSubtitle')
     Share sensitive information securely with a link that can only be viewed once.
   @endslot
-  
+
   @slot('content')
     <div class="w-full max-w-2xl mx-auto">
       <form
@@ -149,7 +151,7 @@
       </div>
     </div>
   @endslot
-  
+
   @slot('scripts')
     <script>
       function togglePrivateKey() {
@@ -163,7 +165,7 @@
           toggle.style.transform = "rotate(0deg)";
         }
       }
-      
+
       const showAlert = (message, type) => {
         const alertDiv = document.createElement("div");
         alertDiv.className = `fixed top-4 right-4 p-4 rounded-lg ${type === "error" ? "bg-red-500" : "bg-green-500"} text-white shadow-lg z-50`;
@@ -174,7 +176,7 @@
           setTimeout(() => alertDiv.remove(), 500);
         }, 3e3);
       };
-      
+
       document.getElementById("shareForm").addEventListener("submit", async function(e) {
         e.preventDefault();
         const content = document.getElementById("content").value;
@@ -221,7 +223,7 @@
           loadingEl.classList.add("hidden");
         }
       });
-      
+
       document.getElementById("copy-link").addEventListener("click", function() {
         const shareLinkInput = document.getElementById("share-link");
         shareLinkInput.select();
@@ -231,7 +233,7 @@
           this.textContent = "Copy";
         }, 2e3);
       });
-      
+
       document.getElementById("copy-key").addEventListener("click", function() {
         const privateKeyInput = document.getElementById("private-key");
         privateKeyInput.select();

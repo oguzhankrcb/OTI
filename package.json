@@ -43,6 +43,7 @@
     "@swc/core": "1.10.7",
     "@types/luxon": "^3.4.2",
     "@types/node": "^22.13.2",
+    "@types/node-cron": "^3.0.11",
     "@types/node-rsa": "^1.1.4",
     "eslint": "^9.20.1",
     "hot-hook": "^0.4.0",
@@ -64,7 +65,9 @@
     "edge.js": "^6.2.1",
     "luxon": "^3.5.0",
     "mysql2": "^3.13.0",
+    "node-cron": "^3.0.3",
     "node-rsa": "^1.1.1",
+    "pino-roll": "^3.0.0",
     "reflect-metadata": "^0.2.2"
   },
   "hotHook": {

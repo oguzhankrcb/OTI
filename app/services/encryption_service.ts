@@ -1,5 +1,5 @@
 import { getWorkerPool } from './worker_pool.js'
-
+import logger from '@adonisjs/core/services/logger'
 /**
  * EncryptionService provides asymmetric encryption functionality using RSA
  * for the one-time information sharing application.
@@ -27,7 +27,7 @@ export class EncryptionService {
 
       return result
     } catch (error) {
-      console.error('Encryption failed:', error)
+      logger.error('Encryption failed:', error)
       throw new Error('Failed to encrypt the message.')
     }
   }
@@ -50,7 +50,7 @@ export class EncryptionService {
 
       return result
     } catch (error) {
-      console.error('Decryption failed:', error)
+      logger.error('Decryption failed:', error)
       throw new Error(
         'Failed to decrypt the message. The key may be invalid or the message corrupted.'
       )
@@ -95,7 +95,7 @@ export class EncryptionService {
 
       return result
     } catch (error) {
-      console.error('Key compression failed:', error)
+      logger.error('Key compression failed:', error)
       throw new Error('Failed to compress the private key')
     }
   }
@@ -116,7 +116,7 @@ export class EncryptionService {
 
       return result
     } catch (error) {
-      console.error('Key decompression failed:', error)
+      logger.error('Key decompression failed:', error)
       throw new Error('Failed to decompress the private key. The key may be invalid or corrupted.')
     }
   }

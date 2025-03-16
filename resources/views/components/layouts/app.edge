@@ -37,44 +37,44 @@
         --primary-indigo-light: #a599ff;
         --primary-purple-light: #b9a0fb;
       }
-      
+
       @keyframes blob {
         0% {
           transform: translate(0px, 0px) scale(1);
         }
-      
+
         33% {
           transform: translate(30px, -50px) scale(1.1);
         }
-      
+
         66% {
           transform: translate(-20px, 20px) scale(0.9);
         }
-      
+
         100% {
           transform: translate(0px, 0px) scale(1);
         }
       }
-      
+
       .animate-blob {
         animation: blob 12s infinite alternate;
       }
-      
+
       .animation-delay-2000 {
         animation-delay: 2s;
       }
-      
+
       .animation-delay-4000 {
         animation-delay: 4s;
       }
-      
+
       .animation-delay-6000 {
         animation-delay: 6s;
       }
     </style>
 
     <script src="https://cdn.tailwindcss.com">
-      
+
     </script>
 
     <script>
@@ -154,7 +154,7 @@
       };
     </script>
 
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
+    @vite(['resources/css/app.css'])
 
     @if ($slots.styles)
       {{{ await $slots.styles() }}}
@@ -193,12 +193,15 @@
     >
     </div>
 
-    <div class="relative flex flex-col min-h-screen items-center justify-center px-4 py-8">
+    <div class="relative flex flex-col min-h-screen items-center justify-center px-4 py-4">
       <!-- Header -->
-      <div class="mb-8 text-center">
+      <div class="mb-4 text-center">
         <h1
           class="text-3xl md:text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-indigo-700 to-purple-700 mb-2"
         >
+        <div class="flex flex-col items-center justify-center mb-4">
+          <img src="/logo.png" alt="OTI Logo" class="w-28 h-28" />
+        </div>
           {{{ await $slots.headerTitle() }}}
         </h1>
         <p class="text-indigo-900/80 max-w-md mx-auto font-medium">
@@ -212,7 +215,7 @@
       </div>
 
       <!-- Footer -->
-      <div class="mt-12 text-center">
+      <div class="mt-6 text-center">
         <p
           class="text-sm bg-white/70 backdrop-blur-sm px-4 py-2 rounded-full inline-block shadow-sm border border-purple-100 text-indigo-700"
         >

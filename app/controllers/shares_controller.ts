@@ -2,6 +2,7 @@ import type { HttpContext } from '@adonisjs/core/http'
 import SecretShare from '#models/secret_share'
 import { EncryptionService } from '#services/encryption_service'
 import vine from '@vinejs/vine'
+import logger from '@adonisjs/core/services/logger'
 
 export default class SharesController {
   public async index({ view, request }: HttpContext) {
@@ -39,7 +40,7 @@ export default class SharesController {
         expiresAt: share.expiresAt,
       }
     } catch (error) {
-      console.error('Error creating share:', error)
+      logger.error('Error creating share:', error)
       return response.status(500).json({
         success: false,
         message: 'Failed to create encrypted share',
@@ -82,7 +83,7 @@ export default class SharesController {
       try {
         privateKey = await EncryptionService.decompressPrivateKey(privateKey)
       } catch (error) {
-        console.error('Failed to decompress private key:', error)
+        logger.error('Failed to decompress private key:', error)
       }
     }
 
@@ -112,7 +113,7 @@ export default class SharesController {
         content: decryptedText,
       }
     } catch (error) {
-      console.error('Decryption failed:', error)
+      logger.error('Decryption failed:', error)
       return response.status(400).json({
         success: false,
         message: 'Failed to decrypt the content. The private key may be invalid.',
