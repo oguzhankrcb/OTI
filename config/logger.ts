@@ -19,7 +19,7 @@ const loggerConfig = defineConfig({
           .push({
             target: 'pino-roll',
             options: {
-              file: join(process.cwd(), 'logs/adonisjs.log'),
+              file: join(process.cwd(), 'logs', 'adonisjs.log'),
               frequency: 'daily',
               mkdir: true,
             },
