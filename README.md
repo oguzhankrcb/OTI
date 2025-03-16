@@ -10,6 +10,7 @@ OTI (One Time Information) is a modern web application designed for secure, one-
 - **🚀 Multi-Worker Architecture**: Uses WorkerPool for CPU-intensive encryption operations
 - **💨 Compression**: Shortens URLs with private key compression
 - **👁️ Single View**: Each share can only be viewed once and is automatically deleted afterward
+- **🧹 Automatic Cleanup**: Scheduled tasks automatically remove expired shares from the database
 
 ## 🏗️ Project Structure
 
@@ -20,7 +21,11 @@ OTI/
 │   ├── models/               # Database models
 │   ├── services/             # Business logic services (EncryptionService, etc.)
 │   │   ├── encryption_service.ts   # Provides encryption services
-│   │   └── worker_pool.ts          # Manages worker threads
+│   │   ├── worker_pool.ts          # Manages worker threads
+│   │   └── scheduler/              # Scheduler for background tasks
+│   │       ├── scheduler.ts        # Scheduler implementation
+│   │       └── tasks/              # Background tasks
+│   │           └── clean_expired_shares.ts   # Task to remove expired shares
 │   └── workers/              # Worker threads
 │       └── encryption_worker.ts     # Performs encryption operations
 ├── config/                   # Application configuration
@@ -40,6 +45,7 @@ OTI/
 - **Frontend**: HTML, CSS, JavaScript
 - **Validation**: [VineJS](https://vinejs.dev/) - Form validation
 - **Multi-Threading**: Node.js `worker_threads` API
+- **Task Scheduling**: [node-cron](https://www.npmjs.com/package/node-cron) - Cron-style job scheduling
 
 ## 🚀 Worker Architecture
 
@@ -58,6 +64,29 @@ const result = await getWorkerPool().execute({
 });
 ```
 
+## ⏰ Scheduler Architecture
+
+OTI implements a job scheduler to handle background tasks like cleaning up expired shares. Key features:
+
+- **Scheduled Tasks**: Cron-based scheduling for automated maintenance tasks
+- **Task isolation**: Each task is encapsulated in its own class with a defined schedule and handler
+- **Automatic cleanup**: Expired shares are automatically removed every 15 minutes
+- **Configurable**: Can be enabled/disabled via environment variables
+
+```typescript
+// Example of a scheduled task implementation
+export default class CleanExpiredShares implements Task {
+  public schedule = '*/15 * * * *'; // Run every 15 minutes
+  
+  public async handle(): Promise<void> {
+    // Find and delete expired shares
+    const now = DateTime.now().toSQL();
+    const expiredShares = await SecretShare.query().where('expires_at', '<', now);
+    // Delete shares...
+  }
+}
+```
+
 ## 📦 Installation
 
 1. Clone the repository:
@@ -74,6 +103,7 @@ npm install
 3. Configure the `.env` file:
 ```
 cp .env.example .env
+# To enable the scheduler, set START_SCHEDULER=true
 ```
 
 4. Create the database:
