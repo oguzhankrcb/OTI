@@ -13,6 +13,7 @@ OTI (One Time Information) is a modern web application designed for secure, one-
 - **💨 Compression**: Shortens URLs with private key compression
 - **👁️ Single View**: Each share can only be viewed once and is automatically deleted afterward
 - **🧹 Automatic Cleanup**: Scheduled tasks automatically remove expired shares from the database
+- **🛡️ Rate Limiting**: Protects against abuse by limiting request rates using Redis
 
 ## 🏗️ Project Structure
 
@@ -48,6 +49,8 @@ OTI/
 - **Validation**: [VineJS](https://vinejs.dev/) - Form validation
 - **Multi-Threading**: Node.js `worker_threads` API
 - **Task Scheduling**: [node-cron](https://www.npmjs.com/package/node-cron) - Cron-style job scheduling
+- **Rate Limiting**: [@adonisjs/limiter](https://docs.adonisjs.com/guides/security/rate-limiting) - Request rate limiting
+- **Redis**: [Redis](https://redis.io/) - In-memory data store used for rate limiting
 
 ## 🚀 Worker Architecture
 
@@ -64,6 +67,26 @@ const result = await getWorkerPool().execute({
   operation: 'encrypt',
   text: 'Secret message',
 });
+```
+
+## 🛡️ Rate Limiting
+
+OTI implements rate limiting to protect against abuse and ensure fair resource usage:
+
+- **Redis-backed**: Uses Redis for distributed rate limiting across multiple instances
+- **Route protection**: Limits the number of requests to sensitive routes
+- **Customizable limits**: Configure different thresholds for various endpoints
+- **Graceful handling**: Custom error pages for rate-limited requests
+
+```typescript
+// Example of route with rate limiting middleware
+router
+  .group(() => {
+    router.get('', [SharesController, 'index'])
+    router.post('', [SharesController, 'store'])
+  })
+  .prefix('/share')
+  .use(throttle) // Apply rate limiting
 ```
 
 ## ⏰ Scheduler Architecture
@@ -106,6 +129,10 @@ npm install
 ```
 cp .env.example .env
 # To enable the scheduler, set START_SCHEDULER=true
+# For rate limiting, configure Redis connection
+# REDIS_HOST=127.0.0.1
+# REDIS_PORT=6379
+# LIMITER_STORE=redis
 ```
 
 4. Create the database:
