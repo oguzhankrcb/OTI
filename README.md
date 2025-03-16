@@ -1,3 +1,5 @@
+![image](https://github.com/user-attachments/assets/9a826cc7-68e1-4453-9453-524b9a1e4e2a)
+
 # 🔐 OTI - One Time Information
 
 OTI (One Time Information) is a modern web application designed for secure, one-time information sharing. It ensures safe sharing of sensitive information using end-to-end encryption.
