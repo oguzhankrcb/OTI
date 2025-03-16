@@ -31,7 +31,7 @@ export default class SharesController {
         password || undefined
       )
 
-      const compressedKey = EncryptionService.compressPrivateKey(privateKey)
+      const compressedKey = await EncryptionService.compressPrivateKey(privateKey)
 
       return {
         success: true,
@@ -80,7 +80,7 @@ export default class SharesController {
 
     if (privateKey && !privateKey.includes('BEGIN RSA PRIVATE KEY')) {
       try {
-        privateKey = EncryptionService.decompressPrivateKey(privateKey)
+        privateKey = await EncryptionService.decompressPrivateKey(privateKey)
       } catch (error) {
         console.error('Failed to decompress private key:', error)
       }
@@ -103,7 +103,7 @@ export default class SharesController {
     }
 
     try {
-      const decryptedText = EncryptionService.decrypt(share.encryptedText, privateKey)
+      const decryptedText = await EncryptionService.decrypt(share.encryptedText, privateKey)
 
       await share.delete()
 

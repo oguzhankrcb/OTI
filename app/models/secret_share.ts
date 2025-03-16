@@ -33,7 +33,7 @@ export default class SecretShare extends BaseModel {
     expiresIn: string,
     password?: string
   ): Promise<{ share: SecretShare; privateKey: string }> {
-    const { encryptedText, publicKey, privateKey } = EncryptionService.encrypt(text)
+    const { encryptedText, publicKey, privateKey } = await EncryptionService.encrypt(text)
 
     const accessId = crypto.randomBytes(32).toString('hex')
 

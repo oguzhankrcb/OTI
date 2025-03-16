@@ -1,33 +1,34 @@
-import NodeRSA from 'node-rsa'
-import { deflateSync, inflateSync } from 'node:zlib'
+import { getWorkerPool } from './worker_pool.js'
 
 /**
  * EncryptionService provides asymmetric encryption functionality using RSA
  * for the one-time information sharing application.
+ *
+ * Uses a WorkerPool for CPU-intensive operations to prevent blocking the main thread.
  */
 export class EncryptionService {
   /**
    * Encrypts the provided text using RSA asymmetric encryption
    *
    * @param text The text to be encrypted
-   * @returns An object containing the encrypted text and both public and private keys
+   * @returns A promise that resolves to an object containing the encrypted text and both public and private keys
    */
-  public static encrypt(text: string): {
+  public static async encrypt(text: string): Promise<{
     encryptedText: string
     publicKey: string
     privateKey: string
-  } {
-    const key = new NodeRSA({ b: 2048 })
+  }> {
+    try {
+      // Offload the CPU-intensive encryption to a worker thread
+      const result = await getWorkerPool().execute({
+        operation: 'encrypt',
+        text,
+      })
 
-    const publicKey = key.exportKey('public')
-    const privateKey = key.exportKey('private')
-
-    const encryptedText = key.encrypt(text, 'base64')
-
-    return {
-      encryptedText,
-      publicKey,
-      privateKey,
+      return result
+    } catch (error) {
+      console.error('Encryption failed:', error)
+      throw new Error('Failed to encrypt the message.')
     }
   }
 
@@ -36,15 +37,18 @@ export class EncryptionService {
    *
    * @param encryptedText The encrypted text in base64 format
    * @param privateKey The private key in PEM format
-   * @returns The decrypted text
+   * @returns A promise that resolves to the decrypted text
    */
-  public static decrypt(encryptedText: string, privateKey: string): string {
+  public static async decrypt(encryptedText: string, privateKey: string): Promise<string> {
     try {
-      const key = new NodeRSA(privateKey)
+      // Offload the CPU-intensive decryption to a worker thread
+      const result = await getWorkerPool().execute({
+        operation: 'decrypt',
+        encryptedText,
+        privateKey,
+      })
 
-      const decryptedText = key.decrypt(encryptedText, 'utf8')
-
-      return decryptedText
+      return result
     } catch (error) {
       console.error('Decryption failed:', error)
       throw new Error(
@@ -58,12 +62,18 @@ export class EncryptionService {
    *
    * @param encryptedText The encrypted text in base64 format
    * @param privateKey The private key in PEM format
-   * @returns Boolean indicating if the key can decrypt the text
+   * @returns A promise that resolves to a boolean indicating if the key can decrypt the text
    */
-  public static validateKey(encryptedText: string, privateKey: string): boolean {
+  public static async validateKey(encryptedText: string, privateKey: string): Promise<boolean> {
     try {
-      this.decrypt(encryptedText, privateKey)
-      return true
+      // Offload validation to a worker thread
+      const result = await getWorkerPool().execute({
+        operation: 'validateKey',
+        encryptedText,
+        privateKey,
+      })
+
+      return result
     } catch (error) {
       return false
     }
@@ -73,19 +83,17 @@ export class EncryptionService {
    * Compresses and encodes the private key for use in URL fragments
    *
    * @param privateKey The private key in PEM format
-   * @returns The compressed and base64url encoded key
+   * @returns A promise that resolves to the compressed and base64url encoded key
    */
-  public static compressPrivateKey(privateKey: string): string {
+  public static async compressPrivateKey(privateKey: string): Promise<string> {
     try {
-      // Compress the private key using zlib
-      const compressed = deflateSync(Buffer.from(privateKey, 'utf8'))
+      // Offload compression to a worker thread
+      const result = await getWorkerPool().execute({
+        operation: 'compressKey',
+        privateKey,
+      })
 
-      // Encode to base64 and make it URL safe
-      return compressed
-        .toString('base64')
-        .replace(/\+/g, '-')
-        .replace(/\//g, '_')
-        .replace(/=+$/, '')
+      return result
     } catch (error) {
       console.error('Key compression failed:', error)
       throw new Error('Failed to compress the private key')
@@ -96,21 +104,17 @@ export class EncryptionService {
    * Decompresses the private key from URL fragment format
    *
    * @param compressedKey The compressed and base64url encoded key
-   * @returns The original private key in PEM format
+   * @returns A promise that resolves to the original private key in PEM format
    */
-  public static decompressPrivateKey(compressedKey: string): string {
+  public static async decompressPrivateKey(compressedKey: string): Promise<string> {
     try {
-      // Make base64 URL safe string back to regular base64
-      let base64 = compressedKey.replace(/-/g, '+').replace(/_/g, '/')
+      // Offload decompression to a worker thread
+      const result = await getWorkerPool().execute({
+        operation: 'decompressKey',
+        compressedKey,
+      })
 
-      // Add padding if needed
-      while (base64.length % 4) {
-        base64 += '='
-      }
-
-      // Decompress the key
-      const decompressed = inflateSync(Buffer.from(base64, 'base64'))
-      return decompressed.toString('utf8')
+      return result
     } catch (error) {
       console.error('Key decompression failed:', error)
       throw new Error('Failed to decompress the private key. The key may be invalid or corrupted.')

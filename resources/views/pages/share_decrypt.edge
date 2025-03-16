@@ -1,245 +1,307 @@
 @layouts.app()
 
-@slot('headerTitle')
-Decrypt Secure Information
-@endslot
+  @slot('headerTitle')
+    Decrypt Secure Information
+  @endslot
+  
+  @slot('headerSubtitle')
+    Enter your private key to decrypt the shared content.
+  @endslot
+  
+  @slot('content')
 
-@slot('headerSubtitle')
-Enter your private key to decrypt the shared content.
-@endslot
+    <!-- Main Content -->
+    <div class="w-full max-w-2xl mx-auto relative z-10">
+      <form
+        id="decryptForm"
+        class="bg-white/90 backdrop-blur-sm p-6 md:p-8 rounded-2xl shadow-lg border border-purple-200 hover:border-purple-300 transition-all duration-300 transform hover:shadow-xl hover:scale-[1.01]"
+      >
+        <!-- Access ID (hidden) -->
+        <input type="hidden" id="accessId" name="accessId" value="{{ accessId }}" />
 
-@slot('content')
+        <!-- Hidden input for private key - will be populated from URL hash -->
+        <input type="hidden" id="privateKey" name="privateKey" />
 
-<!-- Main Content -->
-<div class="w-full max-w-2xl mx-auto relative z-10">
-  <form id="decryptForm"
-    class="bg-white/90 backdrop-blur-sm p-6 md:p-8 rounded-2xl shadow-lg border border-purple-200 hover:border-purple-300 transition-all duration-300 transform hover:shadow-xl hover:scale-[1.01]">
-    <!-- Access ID (hidden) -->
-    <input type="hidden" id="accessId" name="accessId" value="{{ accessId }}" />
+        @if(hasPassword)
+          <!-- Password Input (shown only if password protection is enabled) -->
+          <div class="mb-6">
+            <label for="password" class="block text-sm font-medium text-indigo-700 mb-2">Password</label>
+            <div class="relative">
+              <input
+                type="password"
+                id="password"
+                name="password"
+                class="w-full p-4 bg-white border-2 border-purple-200 rounded-xl focus:ring-2 focus:ring-indigo-400 focus:border-indigo-500 focus:outline-none transition-all duration-200 placeholder-purple-300 shadow-inner"
+                placeholder="Enter the password to decrypt"
+                required
+              />
+              <div class="absolute inset-y-0 right-0 flex items-center pr-3">
+                <svg
+                  class="h-5 w-5 text-purple-400"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
+                  />
 
-    <!-- Hidden input for private key - will be populated from URL hash -->
-    <input type="hidden" id="privateKey" name="privateKey" />
+                </svg>
+              </div>
+            </div>
+          </div>
+        @endif
+        
+        <!-- Submit Button -->
+        <div class="flex justify-center">
+          <button
+            type="submit"
+            id="decrypt-btn"
+            class="px-8 py-3 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white font-medium rounded-lg transition-all duration-300 transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-400 flex items-center gap-2 shadow-md hover:shadow-lg"
+          >
+            <svg
+              class="w-5 h-5"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M8 11V7a4 4 0 118 0m-4 8v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2z"
+              />
 
-    @if(hasPassword)
-    <!-- Password Input (shown only if password protection is enabled) -->
-    <div class="mb-6">
-      <label for="password" class="block text-sm font-medium text-indigo-700 mb-2">Password</label>
-      <div class="relative">
-        <input type="password" id="password" name="password"
-          class="w-full p-4 bg-white border-2 border-purple-200 rounded-xl focus:ring-2 focus:ring-indigo-400 focus:border-indigo-500 focus:outline-none transition-all duration-200 placeholder-purple-300 shadow-inner"
-          placeholder="Enter the password to decrypt" required />
-        <div class="absolute inset-y-0 right-0 flex items-center pr-3">
-          <svg class="h-5 w-5 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"
-            xmlns="http://www.w3.org/2000/svg">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-              d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z">
-            </path>
-          </svg>
+            </svg>
+            Decrypt Message
+      </button>
         </div>
-      </div>
-    </div>
-    @endif
 
-    <!-- Submit Button -->
-    <div class="flex justify-center">
-      <button type="submit" id="decrypt-btn"
-        class="px-8 py-3 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white font-medium rounded-lg transition-all duration-300 transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-400 flex items-center gap-2 shadow-md hover:shadow-lg">
-        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-            d="M8 11V7a4 4 0 118 0m-4 8v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2z"></path>
-        </svg>
-        Decrypt Message
-      </button>
-    </div>
+        <!-- Loading indicator (hidden by default) -->
+        <div id="loading" class="text-center mt-4 hidden">
+          <div
+            class="inline-block animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-indigo-600 drop-shadow-md"
+          >
+          </div>
+          <p class="text-indigo-700 mt-2 font-medium">
+            Decrypting message...
+          </p>
+        </div>
+      </form>
 
-    <!-- Loading indicator (hidden by default) -->
-    <div id="loading" class="text-center mt-4 hidden">
+      <!-- Decrypted Content (Hidden by default) -->
       <div
-        class="inline-block animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-indigo-600 drop-shadow-md">
-      </div>
-      <p class="text-indigo-700 mt-2 font-medium">Decrypting message...</p>
-    </div>
-  </form>
+        id="decrypted-content"
+        class="mt-6 bg-white/90 backdrop-blur-sm p-6 rounded-2xl shadow-lg border border-indigo-200 hidden transform transition-all duration-500 ease-in-out hover:shadow-xl"
+      >
+        <h3
+          class="text-lg font-semibold text-transparent bg-clip-text bg-gradient-to-r from-indigo-700 to-purple-700 mb-3 inline-block"
+        >
+          Decrypted Message
+        </h3>
+        <div class="relative">
+          <div
+            class="p-4 bg-gradient-to-br from-white to-indigo-50/70 rounded-lg border border-indigo-200 whitespace-pre-wrap break-words font-mono text-sm shadow-inner"
+            id="message-content"
+          >
+          </div>
+          <button
+            id="copy-message"
+            class="absolute top-2 right-2 p-2 bg-white/90 backdrop-blur-sm rounded-md shadow-md hover:bg-indigo-100 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-purple-400 transform hover:scale-110"
+            title="Copy to clipboard"
+          >
+            <svg
+              class="w-5 h-5 text-indigo-600"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3"
+              />
 
-  <!-- Decrypted Content (Hidden by default) -->
-  <div id="decrypted-content"
-    class="mt-6 bg-white/90 backdrop-blur-sm p-6 rounded-2xl shadow-lg border border-indigo-200 hidden transform transition-all duration-500 ease-in-out hover:shadow-xl">
-    <h3
-      class="text-lg font-semibold text-transparent bg-clip-text bg-gradient-to-r from-indigo-700 to-purple-700 mb-3 inline-block">
-      Decrypted Message</h3>
-    <div class="relative">
-      <div
-        class="p-4 bg-gradient-to-br from-white to-indigo-50/70 rounded-lg border border-indigo-200 whitespace-pre-wrap break-words font-mono text-sm shadow-inner"
-        id="message-content">
-      </div>
-      <button id="copy-message"
-        class="absolute top-2 right-2 p-2 bg-white/90 backdrop-blur-sm rounded-md shadow-md hover:bg-indigo-100 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-purple-400 transform hover:scale-110"
-        title="Copy to clipboard">
-        <svg class="w-5 h-5 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"
-          xmlns="http://www.w3.org/2000/svg">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-            d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3">
-          </path>
-        </svg>
-      </button>
-    </div>
+            </svg>
+          </button>
+        </div>
 
-    <div class="mt-4 p-4 bg-gradient-to-r from-amber-50 to-yellow-50 border border-amber-200 rounded-lg shadow-sm">
-      <p class="text-sm text-amber-800">
-        <span class="font-medium bg-amber-200/50 px-2 py-0.5 rounded-md inline-block mb-1">Remember:</span> This message
+        <div
+          class="mt-4 p-4 bg-gradient-to-r from-amber-50 to-yellow-50 border border-amber-200 rounded-lg shadow-sm"
+        >
+          <p class="text-sm text-amber-800">
+            <span class="font-medium bg-amber-200/50 px-2 py-0.5 rounded-md inline-block mb-1">Remember:</span>This message
         has now been viewed and cannot be accessed again.
-      </p>
-    </div>
+          </p>
+        </div>
 
-    <div class="flex justify-center mt-4">
-      <a href="/share" id="generate-link"
-        class="px-8 py-3 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white font-medium rounded-lg transition-all duration-300 transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-400 flex items-center gap-2 shadow-md hover:shadow-lg">
-        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-            d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1">
-          </path>
-        </svg>
-        Share Another Link
+        <div class="flex justify-center mt-4">
+          <a
+            href="/share"
+            id="generate-link"
+            class="px-8 py-3 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white font-medium rounded-lg transition-all duration-300 transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-400 flex items-center gap-2 shadow-md hover:shadow-lg"
+          >
+            <svg
+              class="w-5 h-5"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"
+              />
+
+            </svg>
+            Share Another Link
       </a>
+        </div>
+
+      </div>
     </div>
 
-  </div>
-</div>
+  @endslot
+  
+  @slot('scripts')
 
-@endslot
-
-@slot('scripts')
-
-<script>
-  const showAlert = (message, type) => {
-    const alertDiv = document.createElement('div');
-    alertDiv.className = `fixed top-4 right-4 p-4 rounded-lg ${type === 'error' ? 'bg-red-500' : 'bg-green-500'} text-white shadow-lg z-50`;
-    alertDiv.textContent = message;
-    document.body.appendChild(alertDiv);
-    setTimeout(() => {
-      alertDiv.classList.add('opacity-0', 'transition-opacity', 'duration-500');
-      setTimeout(() => alertDiv.remove(), 500);
-    }, 3000);
-  };
-
-  document.addEventListener('DOMContentLoaded', function() {
-    if (window.location.hash && window.location.hash.length > 1) {
-      const privateKeyFromUrl = window.location.hash.substring(1);
-      if (privateKeyFromUrl) {
-        const privateKeyField = document.getElementById('privateKey');
-        privateKeyField.value = privateKeyFromUrl;
+    <script>
+      const showAlert = (message, type) => {
+        const alertDiv = document.createElement("div");
+        alertDiv.className = `fixed top-4 right-4 p-4 rounded-lg ${type === "error" ? "bg-red-500" : "bg-green-500"} text-white shadow-lg z-50`;
+        alertDiv.textContent = message;
+        document.body.appendChild(alertDiv);
         setTimeout(() => {
-          decryptContent(privateKeyFromUrl);
-        }, 500);
-        history.replaceState(null, document.title, window.location.pathname + window.location.search);
-      }
-    } else {
-      showAlert('No decryption key found in URL. Make sure you are using the complete link.', 'error');
-      const form = document.getElementById('decryptForm');
-      const errorDiv = document.createElement('div');
-      errorDiv.className = 'p-4 bg-red-50 border border-red-200 rounded-lg mt-4';
-      errorDiv.innerHTML = `
-        <p class="text-sm text-red-800">
-          <span class="font-medium">Missing Decryption Key:</span> The URL does not contain the required private key.
-        </p>
-        <ul class="text-sm text-red-700 list-disc pl-5 mt-2 space-y-1">
-          <li>Make sure you are using the complete URL that was shared with you.</li>
-          <li>The URL should include a fragment (part after the # symbol) containing the private key.</li>
-          <li>Contact the person who shared this link if you need assistance.</li>
-        </ul>
-      `;
-      form.appendChild(errorDiv);
-    }
-  });
-
-  async function decryptContent(privateKey, password = '') {
-    const accessId = document.getElementById('accessId').value;
-    const passwordElement = document.getElementById('password');
-    if (passwordElement && !password) {
-      password = passwordElement.value;
-      if (!password.trim()) {
-        return false;
-      }
-    }
-
-    if (!privateKey || !privateKey.trim()) {
-      showAlert('No private key found. Make sure the URL includes the decryption key.', 'error');
-      return false;
-    }
-
-    const loadingEl = document.getElementById('loading');
-    loadingEl.classList.remove('hidden');
-    try {
-      const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
-      const response = await fetch(`/share/${accessId}/decrypt`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Accept': 'application/json',
-          'X-CSRF-TOKEN': csrfToken || ''
-        },
-        body: JSON.stringify({ privateKey, password })
+          alertDiv.classList.add("opacity-0", "transition-opacity", "duration-500");
+          setTimeout(() => alertDiv.remove(), 500);
+        }, 3e3);
+      };
+      
+      document.addEventListener("DOMContentLoaded", function() {
+        if (window.location.hash && window.location.hash.length > 1) {
+          const privateKeyFromUrl = window.location.hash.substring(1);
+          if (privateKeyFromUrl) {
+            const privateKeyField = document.getElementById("privateKey");
+            privateKeyField.value = privateKeyFromUrl;
+            setTimeout(() => {
+              decryptContent(privateKeyFromUrl);
+            }, 500);
+            history.replaceState(null, document.title, window.location.pathname + window.location.search);
+          }
+        } else {
+          showAlert("No decryption key found in URL. Make sure you are using the complete link.", "error");
+          const form = document.getElementById("decryptForm");
+          const errorDiv = document.createElement("div");
+          errorDiv.className = "p-4 bg-red-50 border border-red-200 rounded-lg mt-4";
+          errorDiv.innerHTML = `
+              <p class="text-sm text-red-800">
+                <span class="font-medium">Missing Decryption Key:</span> The URL does not contain the required private key.
+              </p>
+              <ul class="text-sm text-red-700 list-disc pl-5 mt-2 space-y-1">
+                <li>Make sure you are using the complete URL that was shared with you.</li>
+                <li>The URL should include a fragment (part after the # symbol) containing the private key.</li>
+                <li>Contact the person who shared this link if you need assistance.</li>
+              </ul>
+            `;
+          form.appendChild(errorDiv);
+        }
       });
-      const data = await response.json();
-      if (data.success) {
-        const contentEl = document.getElementById('decrypted-content');
-        contentEl.classList.remove('hidden');
-
-        document.getElementById('message-content').textContent = data.content;
-
-        document.getElementById('decryptForm').classList.add('hidden');
-
-        contentEl.scrollIntoView({ behavior: 'smooth' });
-        return true;
-      } else {
-        showAlert('Error: ' + (data.message || 'Failed to decrypt message'), 'error');
-        return false;
+      
+      async function decryptContent(privateKey, password = "") {
+        const accessId = document.getElementById("accessId").value;
+        const passwordElement = document.getElementById("password");
+        if (passwordElement && !password) {
+          password = passwordElement.value;
+          if (!password.trim()) {
+            return false;
+          }
+        }
+        if (!privateKey || !privateKey.trim()) {
+          showAlert("No private key found. Make sure the URL includes the decryption key.", "error");
+          return false;
+        }
+        const loadingEl = document.getElementById("loading");
+        loadingEl.classList.remove("hidden");
+        try {
+          const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute("content");
+          const response = await fetch(`/share/${accessId}/decrypt`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Accept: "application/json",
+              "X-CSRF-TOKEN": csrfToken || ""
+            },
+            body: JSON.stringify({
+              privateKey: privateKey,
+              password: password
+            })
+          });
+          const data = await response.json();
+          if (data.success) {
+            const contentEl = document.getElementById("decrypted-content");
+            contentEl.classList.remove("hidden");
+            document.getElementById("message-content").textContent = data.content;
+            document.getElementById("decryptForm").classList.add("hidden");
+            contentEl.scrollIntoView({
+              behavior: "smooth"
+            });
+            return true;
+          } else {
+            showAlert("Error: " + (data.message || "Failed to decrypt message"), "error");
+            return false;
+          }
+        } catch (error) {
+          console.error("Error decrypting message:", error);
+          showAlert("An unexpected error occurred. Please try again.", "error");
+          return false;
+        } finally {
+          loadingEl.classList.add("hidden");
+        }
       }
-    } catch (error) {
-      console.error('Error decrypting message:', error);
-      showAlert('An unexpected error occurred. Please try again.', 'error');
-      return false;
-    } finally {
-      loadingEl.classList.add('hidden');
-    }
-  }
-
-  document.getElementById('decryptForm').addEventListener('submit', async function(e) {
-    e.preventDefault();
-    const privateKey = document.getElementById('privateKey').value;
-    await decryptContent(privateKey);
-  });
-
-  document.addEventListener('click', function(e) {
-    if (e.target.closest('#copy-message')) {
-      const messageContent = document.getElementById('message-content').textContent;
-      navigator.clipboard.writeText(messageContent.trim())
-        .then(() => {
-          showCopyFeedback('Copied to clipboard!', 'success');
-        })
-        .catch(err => {
-          console.error('Error copying text: ', err);
-          showCopyFeedback('Failed to copy', 'error');
-        });
-    }
-  });
-
-  function showCopyFeedback(message, type) {
-    const existingFeedback = document.getElementById('copy-feedback');
-    if (existingFeedback) {
-      existingFeedback.remove();
-    }
-    const feedback = document.createElement('div');
-    feedback.id = 'copy-feedback';
-    feedback.className = `absolute top-2 right-12 text-xs px-2 py-1 rounded ${type === 'success' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`;
-    feedback.textContent = message;
-    document.querySelector('#copy-message').parentNode.appendChild(feedback);
-    setTimeout(() => {
-      feedback.classList.add('opacity-0', 'transition-opacity', 'duration-500');
-      setTimeout(() => feedback.remove(), 500);
-    }, 2000);
-  }
-</script>
-@endslot
-
+      
+      document.getElementById("decryptForm").addEventListener("submit", async function(e) {
+        e.preventDefault();
+        const privateKey = document.getElementById("privateKey").value;
+        await decryptContent(privateKey);
+      });
+      
+      document.addEventListener("click", function(e) {
+        if (e.target.closest("#copy-message")) {
+          const messageContent = document.getElementById("message-content").textContent;
+          navigator.clipboard.writeText(messageContent.trim()).then(() => {
+            showCopyFeedback("Copied to clipboard!", "success");
+          }).catch(err => {
+            console.error("Error copying text: ", err);
+            showCopyFeedback("Failed to copy", "error");
+          });
+        }
+      });
+      
+      function showCopyFeedback(message, type) {
+        const existingFeedback = document.getElementById("copy-feedback");
+        if (existingFeedback) {
+          existingFeedback.remove();
+        }
+        const feedback = document.createElement("div");
+        feedback.id = "copy-feedback";
+        feedback.className = `absolute top-2 right-12 text-xs px-2 py-1 rounded ${type === "success" ? "bg-green-100 text-green-800" : "bg-red-100 text-red-800"}`;
+        feedback.textContent = message;
+        document.querySelector("#copy-message").parentNode.appendChild(feedback);
+        setTimeout(() => {
+          feedback.classList.add("opacity-0", "transition-opacity", "duration-500");
+          setTimeout(() => feedback.remove(), 500);
+        }, 2e3);
+      }
+    </script>
+  @endslot
+  
 @end

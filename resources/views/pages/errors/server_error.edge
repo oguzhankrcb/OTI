@@ -1,52 +1,87 @@
 @layouts.app()
-@slot('headerTitle')
-{{ error.code }} - Server Error
-@endslot
+  @slot('headerTitle')
+    {{ error.code }} - Server Error
+  @endslot
+  
+  @slot('headerSubtitle')
+    Something went wrong on our end. We're working to fix the issue.
+  @endslot
+  
+  @slot('content')
+    <!-- Content -->
+    <div class="w-full max-w-md mx-auto text-center">
+      <div class="mb-8">
+        <div
+          class="w-24 h-24 mx-auto flex items-center justify-center rounded-full bg-gradient-to-br from-red-100 to-pink-100 shadow-md"
+        >
+          <svg
+            class="w-14 h-14 text-red-600"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="1.5"
+              d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"
+            />
 
-@slot('headerSubtitle')
-Something went wrong on our end. We're working to fix the issue.
-@endslot
+          </svg>
+        </div>
+      </div>
 
-@slot('content')
-<!-- Content -->
-<div class="w-full max-w-md mx-auto text-center">
-  <div class="mb-8">
-    <div class="w-24 h-24 mx-auto flex items-center justify-center rounded-full bg-gradient-to-br from-red-100 to-pink-100 shadow-md">
-      <svg class="w-14 h-14 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"
-        xmlns="http://www.w3.org/2000/svg">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
-          d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-      </svg>
-    </div>
-  </div>
+      <a
+        href="javascript:history.back()"
+        class="px-6 py-3 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white font-medium rounded-lg transition-all duration-300 shadow-md hover:shadow-lg transform hover:scale-105 inline-flex items-center gap-2 mr-2"
+      >
+        <svg
+          class="w-5 h-5"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
 
-  <a href="javascript:history.back()"
-    class="px-6 py-3 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white font-medium rounded-lg transition-all duration-300 shadow-md hover:shadow-lg transform hover:scale-105 inline-flex items-center gap-2 mr-2">
-    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
-    </svg>
-    Go Back
+        </svg>
+        Go Back
   </a>
 
-  <a href="/"
-    class="px-6 py-3 bg-gradient-to-r from-indigo-100 to-purple-100 hover:from-indigo-200 hover:to-purple-200 text-indigo-700 font-medium rounded-lg transition-all duration-300 shadow-md hover:shadow-lg transform hover:scale-105 inline-flex items-center gap-2 ml-2">
-    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-        d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6">
-      </path>
-    </svg>
-    Home
+      <a
+        href="/"
+        class="px-6 py-3 bg-gradient-to-r from-indigo-100 to-purple-100 hover:from-indigo-200 hover:to-purple-200 text-indigo-700 font-medium rounded-lg transition-all duration-300 shadow-md hover:shadow-lg transform hover:scale-105 inline-flex items-center gap-2 ml-2"
+      >
+        <svg
+          class="w-5 h-5"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"
+          />
+
+        </svg>
+        Home
   </a>
 
-  <div class="mt-8 p-4 bg-gradient-to-r from-red-50 to-pink-50 rounded-lg border border-red-200 shadow-sm">
-    <p class="text-sm text-red-800">
-      <span class="font-medium bg-red-100/70 px-2 py-1 rounded-md inline-block mb-1">Error {{ error.code }}:</span> The server encountered an internal error and was unable
+      <div
+        class="mt-8 p-4 bg-gradient-to-r from-red-50 to-pink-50 rounded-lg border border-red-200 shadow-sm"
+      >
+        <p class="text-sm text-red-800">
+          <span class="font-medium bg-red-100/70 px-2 py-1 rounded-md inline-block mb-1">Error {{ error.code }}:</span>The server encountered an internal error and was unable
       to complete your request.
-    </p>
-    <p class="text-sm text-red-700 mt-2">
-      <span class="inline-block mr-1 text-lg">⚠️</span> If this problem persists, please contact the site administrator.
-    </p>
-  </div>
-</div>
-@endslot
+        </p>
+        <p class="text-sm text-red-700 mt-2">
+          <span class="inline-block mr-1 text-lg">⚠️</span>If this problem persists, please contact the site administrator.
+        </p>
+      </div>
+    </div>
+  @endslot
 @end
