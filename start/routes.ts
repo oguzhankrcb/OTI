@@ -8,13 +8,18 @@
 */
 
 import router from '@adonisjs/core/services/router'
+import { throttle } from '#start/limiter'
 const SharesController = () => import('#controllers/shares_controller')
 
 // Home route - redirects to the share page
 router.on('/').redirect('/share')
 
-// Share routes
-router.get('/share', [SharesController, 'index'])
-router.post('/share', [SharesController, 'store'])
-router.get('/share/:id', [SharesController, 'show'])
-router.post('/share/:id/decrypt', [SharesController, 'decrypt'])
+router
+  .group(() => {
+    router.get('', [SharesController, 'index'])
+    router.post('', [SharesController, 'store'])
+    router.get('/:id', [SharesController, 'show'])
+    router.post('/:id/decrypt', [SharesController, 'decrypt'])
+  })
+  .prefix('/share')
+  .use(throttle)
