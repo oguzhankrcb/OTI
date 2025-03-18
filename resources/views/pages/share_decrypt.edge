@@ -3,11 +3,11 @@
   @slot('headerTitle')
     Decrypt Secure Information
   @endslot
-  
+
   @slot('headerSubtitle')
     Enter your private key to decrypt the shared content.
   @endslot
-  
+
   @slot('content')
 
     <!-- Main Content -->
@@ -55,7 +55,7 @@
             </div>
           </div>
         @endif
-        
+
         <!-- Submit Button -->
         <div class="flex justify-center">
           <button
@@ -171,9 +171,8 @@
     </div>
 
   @endslot
-  
-  @slot('scripts')
 
+  @slot('scripts')
     <script>
       const showAlert = (message, type) => {
         const alertDiv = document.createElement("div");
@@ -185,7 +184,7 @@
           setTimeout(() => alertDiv.remove(), 500);
         }, 3e3);
       };
-      
+
       document.addEventListener("DOMContentLoaded", function() {
         if (window.location.hash && window.location.hash.length > 1) {
           const privateKeyFromUrl = window.location.hash.substring(1);
@@ -215,7 +214,7 @@
           form.appendChild(errorDiv);
         }
       });
-      
+
       async function decryptContent(privateKey, password = "") {
         const accessId = document.getElementById("accessId").value;
         const passwordElement = document.getElementById("password");
@@ -229,11 +228,14 @@
           showAlert("No private key found. Make sure the URL includes the decryption key.", "error");
           return false;
         }
+
         const loadingEl = document.getElementById("loading");
         loadingEl.classList.remove("hidden");
+
         try {
           const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute("content");
-          const response = await fetch(`/share/${accessId}/decrypt`, {
+
+          const response = await fetch(`/share/${accessId}`, {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
@@ -241,39 +243,52 @@
               "X-CSRF-TOKEN": csrfToken || ""
             },
             body: JSON.stringify({
-              privateKey: privateKey,
               password: password
             })
           });
+
           const data = await response.json();
+
           if (data.success) {
-            const contentEl = document.getElementById("decrypted-content");
-            contentEl.classList.remove("hidden");
-            document.getElementById("message-content").textContent = data.content;
-            document.getElementById("decryptForm").classList.add("hidden");
-            contentEl.scrollIntoView({
-              behavior: "smooth"
-            });
-            return true;
+            try {
+              const decryptedText = Encryption.decrypt(data.encryptedText, privateKey);
+
+              if (decryptedText === null) {
+                throw new Error('Decryption failed');
+              }
+
+              const contentEl = document.getElementById("decrypted-content");
+              contentEl.classList.remove("hidden");
+              document.getElementById("message-content").textContent = decryptedText;
+              document.getElementById("decryptForm").classList.add("hidden");
+              contentEl.scrollIntoView({
+                behavior: "smooth"
+              });
+              return true;
+            } catch (error) {
+              console.error("Client-side decryption error:", error);
+              showAlert("Error decrypting message. The private key may be invalid.", "error");
+              return false;
+            }
           } else {
-            showAlert("Error: " + (data.message || "Failed to decrypt message"), "error");
+            showAlert("Error: " + (data.message || "Failed to retrieve encrypted message"), "error");
             return false;
           }
         } catch (error) {
-          console.error("Error decrypting message:", error);
+          console.error("Error in decryption process:", error);
           showAlert("An unexpected error occurred. Please try again.", "error");
           return false;
         } finally {
           loadingEl.classList.add("hidden");
         }
       }
-      
+
       document.getElementById("decryptForm").addEventListener("submit", async function(e) {
         e.preventDefault();
         const privateKey = document.getElementById("privateKey").value;
         await decryptContent(privateKey);
       });
-      
+
       document.addEventListener("click", function(e) {
         if (e.target.closest("#copy-message")) {
           const messageContent = document.getElementById("message-content").textContent;
@@ -285,7 +300,7 @@
           });
         }
       });
-      
+
       function showCopyFeedback(message, type) {
         const existingFeedback = document.getElementById("copy-feedback");
         if (existingFeedback) {
@@ -303,5 +318,5 @@
       }
     </script>
   @endslot
-  
+
 @end

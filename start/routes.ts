@@ -19,7 +19,7 @@ router
     router.get('', [SharesController, 'index'])
     router.post('', [SharesController, 'store'])
     router.get('/:id', [SharesController, 'show'])
-    router.post('/:id/decrypt', [SharesController, 'decrypt'])
+    router.post('/:id', [SharesController, 'getEncryptedText'])
   })
   .prefix('/share')
   .use(throttle)

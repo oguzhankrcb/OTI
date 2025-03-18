@@ -188,8 +188,14 @@
         }
         const loadingEl = document.getElementById("loading");
         loadingEl.classList.remove("hidden");
+
         try {
           const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute("content");
+
+          const keys = await Encryption.generateKeys();
+          const encryptedText = Encryption.encrypt(content, keys.publicKey);
+          const compressedPrivateKey = Encryption.compressPrivateKey(keys.privateKey);
+
           const response = await fetch("/share", {
             method: "POST",
             headers: {
@@ -198,17 +204,22 @@
               "X-CSRF-TOKEN": csrfToken || ""
             },
             body: JSON.stringify({
-              content: content,
+              encryptedText: encryptedText,
               expiration: expiration,
               password: password
             })
           });
+
           const data = await response.json();
+
           if (data.success) {
             const resultContainer = document.getElementById("result");
             resultContainer.classList.remove("hidden");
-            const fullShareUrl = window.location.origin + data.shareUrl;
+
+            const shareUrl = `/share/${data.accessId}#${compressedPrivateKey}`;
+            const fullShareUrl = window.location.origin + shareUrl;
             document.getElementById("share-link").value = fullShareUrl;
+
             resultContainer.scrollIntoView({
               behavior: "smooth"
             });
@@ -232,17 +243,6 @@
         setTimeout(() => {
           this.textContent = "Copy";
         }, 2e3);
-      });
-
-      document.getElementById("copy-key").addEventListener("click", function() {
-        const privateKeyInput = document.getElementById("private-key");
-        privateKeyInput.select();
-        document.execCommand("copy");
-        this.textContent = "Copied!";
-        setTimeout(() => {
-          this.textContent = "Copy";
-        }, 2e3);
-        showAlert("Private key copied! Keep it safe - you'll need it to decrypt the message.", "success");
       });
     </script>
   @endslot

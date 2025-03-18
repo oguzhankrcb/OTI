@@ -1,6 +1,5 @@
 import type { HttpContext } from '@adonisjs/core/http'
 import SecretShare from '#models/secret_share'
-import { EncryptionService } from '#services/encryption_service'
 import vine from '@vinejs/vine'
 import logger from '@adonisjs/core/services/logger'
 
@@ -13,7 +12,7 @@ export default class SharesController {
 
   public async store({ request, response }: HttpContext) {
     const shareSchema = vine.object({
-      content: vine.string(),
+      encryptedText: vine.string(),
       expiration: vine.string().in(['5m', '1h', '1d', '7d']),
       password: vine.string().nullable(),
     })
@@ -23,20 +22,14 @@ export default class SharesController {
       data: request.all(),
     })
 
-    const { content, expiration, password } = payload
+    const { encryptedText, expiration, password } = payload
 
     try {
-      const { share, privateKey } = await SecretShare.createShare(
-        content,
-        expiration,
-        password || undefined
-      )
-
-      const compressedKey = await EncryptionService.compressPrivateKey(privateKey)
+      const share = await SecretShare.createShare(encryptedText, expiration, password || undefined)
 
       return {
         success: true,
-        shareUrl: `/share/${share.accessId}#${compressedKey}`,
+        accessId: share.accessId,
         expiresAt: share.expiresAt,
       }
     } catch (error) {
@@ -64,28 +57,19 @@ export default class SharesController {
     })
   }
 
-  public async decrypt({ request, params, response }: HttpContext) {
+  public async getEncryptedText({ request, params, response }: HttpContext) {
     const { id } = params
 
-    const decryptSchema = vine.object({
-      privateKey: vine.string(),
+    const getEncryptedTextSchema = vine.object({
       password: vine.string().optional(),
     })
 
     const payload = await vine.validate({
-      schema: decryptSchema,
+      schema: getEncryptedTextSchema,
       data: request.all(),
     })
 
-    let { privateKey, password } = payload
-
-    if (privateKey && !privateKey.includes('BEGIN RSA PRIVATE KEY')) {
-      try {
-        privateKey = await EncryptionService.decompressPrivateKey(privateKey)
-      } catch (error) {
-        logger.error('Failed to decompress private key:', error)
-      }
-    }
+    const { password } = payload
 
     const share = await SecretShare.findByAccessId(id)
 
@@ -104,19 +88,19 @@ export default class SharesController {
     }
 
     try {
-      const decryptedText = await EncryptionService.decrypt(share.encryptedText, privateKey)
+      const result = {
+        success: true,
+        encryptedText: share.encryptedText,
+      }
 
       await share.delete()
 
-      return {
-        success: true,
-        content: decryptedText,
-      }
+      return result
     } catch (error) {
-      logger.error('Decryption failed:', error)
-      return response.status(400).json({
+      logger.error('Error retrieving share:', error)
+      return response.status(500).json({
         success: false,
-        message: 'Failed to decrypt the content. The private key may be invalid.',
+        message: 'An error occurred while processing the share.',
       })
     }
   }

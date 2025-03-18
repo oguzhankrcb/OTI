@@ -1,6 +1,5 @@
 import { DateTime } from 'luxon'
 import { BaseModel, column } from '@adonisjs/lucid/orm'
-import { EncryptionService } from '../services/encryption_service.js'
 import crypto from 'node:crypto'
 
 export default class SecretShare extends BaseModel {
@@ -9,9 +8,6 @@ export default class SecretShare extends BaseModel {
 
   @column()
   declare encryptedText: string
-
-  @column()
-  declare publicKey: string
 
   @column()
   declare accessId: string
@@ -29,14 +25,11 @@ export default class SecretShare extends BaseModel {
   declare updatedAt: DateTime
 
   public static async createShare(
-    text: string,
+    encryptedText: string,
     expiresIn: string,
     password?: string
-  ): Promise<{ share: SecretShare; privateKey: string }> {
-    const { encryptedText, publicKey, privateKey } = await EncryptionService.encrypt(text)
-
+  ): Promise<SecretShare> {
     const accessId = crypto.randomBytes(32).toString('hex')
-
     const expiresAt = this.calculateExpirationTime(expiresIn)
 
     let passwordHash = null
@@ -46,13 +39,12 @@ export default class SecretShare extends BaseModel {
 
     const share = await this.create({
       encryptedText,
-      publicKey,
       accessId,
       passwordHash,
       expiresAt,
     })
 
-    return { share, privateKey }
+    return share
   }
 
   public static async findByAccessId(accessId: string): Promise<SecretShare | null> {

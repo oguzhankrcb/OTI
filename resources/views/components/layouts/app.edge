@@ -8,7 +8,7 @@
       <meta name="csrf-token" content="{{ csrfToken }}" />
     @endif
     <title>
-      {{ title || 'One-Time Information Sharing' }}
+      {{ title ?? 'OTI - Encrypted Secret Sharing' }}
     </title>
 
     <link rel="preconnect" href="https://fonts.bunny.net" />
@@ -155,6 +155,7 @@
     </script>
 
     @vite(['resources/css/app.css'])
+    @vite(['resources/js/app.js'])
 
     @if ($slots.styles)
       {{{ await $slots.styles() }}}
@@ -228,7 +229,5 @@
       {{{ await $slots.scripts() }}}
     @endif
   </body>
-
-</html>
 
 </html>

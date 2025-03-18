@@ -65,10 +65,11 @@
     "@adonisjs/vite": "^4.0.0",
     "@vinejs/vine": "^3.0.0",
     "edge.js": "^6.2.1",
+    "jsencrypt": "^3.3.2",
     "luxon": "^3.5.0",
     "mysql2": "^3.13.0",
     "node-cron": "^3.0.3",
-    "node-rsa": "^1.1.1",
+    "pako": "^2.1.0",
     "pino-roll": "^3.0.0",
     "reflect-metadata": "^0.2.2"
   },
